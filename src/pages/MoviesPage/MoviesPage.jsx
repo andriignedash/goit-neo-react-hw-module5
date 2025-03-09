@@ -1,39 +1,43 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { searchMovies } from "../../services/api";
 import MovieList from "../../components/MovieList/MovieList";
 import styles from "./MoviesPage.module.css";
 
 const MoviesPage = () => {
-  const [query, setQuery] = useState("");
-  const [movies, setMovies] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
+  const queryParam = searchParams.get("query") || "";
+  const [query, setQuery] = useState(queryParam);
+  const [movies, setMovies] = useState([]);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!queryParam) return;
+    const fetchMovies = async () => {
+      try {
+        setError("");
+        const data = await searchMovies(queryParam);
+        if (!data || data.length === 0) {
+          setError(`No movies found for "${queryParam}". Try another search.`);
+          setMovies([]);
+          return;
+        }
+        setMovies(data);
+      } catch {
+        setError("Failed to fetch movies. Please check your connection.");
+        setMovies([]);
+      }
+    };
+    fetchMovies();
+  }, [queryParam]);
 
   const handleSearch = async (e) => {
     e.preventDefault();
-
     if (!query.trim()) {
       setError("Please enter a movie name.");
       return;
     }
-
-    try {
-      setError("");
-      const data = await searchMovies(query);
-
-      if (!data || data.length === 0) {
-        setError(`No movies found for "${query}". Try another search.`);
-        setMovies([]);
-        return;
-      }
-
-      setMovies(data);
-      setSearchParams({ query });
-    } catch {
-      setError("Failed to fetch movies. Please check your connection.");
-      setMovies([]);
-    }
+    setSearchParams({ query });
   };
 
   return (
