@@ -1,0 +1,25 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+}
+
+.errorText {
+  font-size: 24px;
+  color: #003366;
+  font-weight: bold;
+}
+
+.backLink {
+  margin-top: 20px;
+  text-decoration: none;
+  color: #0055aa;
+  font-size: 18px;
+}
+
+.backLink:hover {
+  text-decoration: underline;
+}
